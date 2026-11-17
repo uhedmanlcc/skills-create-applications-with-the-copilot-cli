@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Supports the four basic calculator operations shown in the reference image:
-// addition (+), subtraction (-), multiplication (* or x), and division (/).
+// Supports addition (+), subtraction (-), multiplication (* or x), division (/),
+// modulo (%), exponentiation (^), and square root (sqrt).
 
 function add(left, right) {
   return left + right;
@@ -23,6 +23,26 @@ function divide(left, right) {
   return left / right;
 }
 
+function modulo(left, right) {
+  if (right === 0) {
+    throw new Error('Cannot take modulo by zero.');
+  }
+
+  return left % right;
+}
+
+function power(base, exponent) {
+  return base ** exponent;
+}
+
+function squareRoot(number) {
+  if (number < 0) {
+    throw new Error('Cannot calculate the square root of a negative number.');
+  }
+
+  return Math.sqrt(number);
+}
+
 function calculate(left, operator, right) {
   switch (operator) {
     case '+':
@@ -35,8 +55,18 @@ function calculate(left, operator, right) {
       return multiply(left, right);
     case '/':
       return divide(left, right);
+    case '%':
+      return modulo(left, right);
+    case '^':
+    case '**':
+      return power(left, right);
+    case 'sqrt':
+    case '√':
+      return squareRoot(left);
     default:
-      throw new Error(`Unsupported operation "${operator}". Use +, -, *, or /.`);
+      throw new Error(
+        `Unsupported operation "${operator}". Use +, -, *, /, %, ^, or sqrt.`,
+      );
   }
 }
 
@@ -51,8 +81,14 @@ function parseNumber(value, name) {
 }
 
 function runCli(args) {
+  if (args.length === 2 && (args[1] === 'sqrt' || args[1] === '√')) {
+    return calculate(parseNumber(args[0], 'The operand'), args[1]);
+  }
+
   if (args.length !== 3) {
-    throw new Error('Usage: node src/calculator.js <number> <operator> <number>');
+    throw new Error(
+      'Usage: node src/calculator.js <number> <operator> <number> or node src/calculator.js <number> sqrt',
+    );
   }
 
   const left = parseNumber(args[0], 'The first operand');
@@ -74,6 +110,9 @@ module.exports = {
   subtract,
   multiply,
   divide,
+  modulo,
+  power,
+  squareRoot,
   calculate,
   runCli,
 };
